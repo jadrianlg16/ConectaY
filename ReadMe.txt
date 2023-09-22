@@ -1,1 +1,0 @@
-READ THIS TEXT G
