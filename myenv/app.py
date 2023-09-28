@@ -46,7 +46,7 @@ mongo = PyMongo(app)
 
 def serialize(doc):
     return json.loads(json_util.dumps(doc))
-
+############################################################################################################
 @app.route('/get_all_collections', methods=['GET'])
 def get_all_collections():
     collections_data = {
@@ -57,7 +57,7 @@ def get_all_collections():
         'tags': [serialize(tag) for tag in mongo.db.tags.find()]
     }
     return jsonify(collections_data), 200
-
+############################################################################################################
 @app.route('/get_organizations', methods=['GET'])
 def get_organizations():
     response = [serialize(org) for org in mongo.db.organizations.find()]
@@ -83,7 +83,7 @@ def get_tags():
     response = [serialize(tag) for tag in mongo.db.tags.find()]
     return jsonify(response), 200
 
-
+############################################################################################################
 @app.route('/add_organization', methods=['POST'])
 def add_organization():
     data = request.get_json()
@@ -128,7 +128,7 @@ def add_tag():
         return jsonify({"message": "Tag added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
-
+############################################################################################################
 
 
 if __name__ == '__main__':
