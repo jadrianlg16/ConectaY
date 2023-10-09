@@ -1,11 +1,11 @@
 from flask import Flask, jsonify, request
-from pymongo import MongoClient
+from flask_pymongo import PyMongo
 from bson import json_util
 from sshtunnel import SSHTunnelForwarder
 import pymongo
 import json
 
-MONGO_HOST = "10.14.255.172"  
+MONGO_HOST = "10.14.255.172"  # replace with your server's IP
 MONGO_DB = "ConectaMX"
 MONGO_USER = "admin01"
 MONGO_PASS = "Tec$2023"
@@ -19,63 +19,58 @@ server = SSHTunnelForwarder(
 
 server.start()
 
-client = MongoClient('127.0.0.1', server.local_bind_port)  
+client = pymongo.MongoClient('127.0.0.1', server.local_bind_port)  # server.local_bind_port is assigned local port
 db = client[MONGO_DB]
 
 app = Flask(__name__)
+mongo = PyMongo(app, client=client)
 
 def serialize(doc):
     return json.loads(json_util.dumps(doc))
 
+############################################################################################################
 @app.route('/get_all_collections', methods=['GET'])
 def get_all_collections():
     collections_data = {
-        'organizations': [serialize(org) for org in db.organizations.find()],
-        'clients': [serialize(client) for client in db.clients.find()],
-        'posts': [serialize(post) for post in db.posts.find()],
-        'notifications': [serialize(notification) for notification in db.notifications.find()],
-        'tags': [serialize(tag) for tag in db.tags.find()]
+        'organizations': [serialize(org) for org in mongo.db.organizations.find()],
+        'clients': [serialize(client) for client in mongo.db.clients.find()],
+        'posts': [serialize(post) for post in mongo.db.posts.find()],
+        'notifications': [serialize(notification) for notification in mongo.db.notifications.find()],
+        'tags': [serialize(tag) for tag in mongo.db.tags.find()]
     }
     return jsonify(collections_data), 200
-
 ############################################################################################################
 @app.route('/get_organizations', methods=['GET'])
 def get_organizations():
-    response = [serialize(org) for org in db.organizations.find()]
+    response = [serialize(org) for org in mongo.db.organizations.find()]
     return jsonify(response), 200
 
 @app.route('/get_clients', methods=['GET'])
 def get_clients():
-    response = [serialize(client) for client in db.clients.find()]
+    response = [serialize(client) for client in mongo.db.clients.find()]
     return jsonify(response), 200
 
 @app.route('/get_posts', methods=['GET'])
 def get_posts():
-    response = [serialize(post) for post in db.posts.find()]
+    response = [serialize(post) for post in mongo.db.posts.find()]
     return jsonify(response), 200
 
 @app.route('/get_notifications', methods=['GET'])
 def get_notifications():
-    response = [serialize(notification) for notification in db.notifications.find()]
+    response = [serialize(notification) for notification in mongo.db.notifications.find()]
     return jsonify(response), 200
-
-# @app.route('/get_tags', methods=['GET'])
-# def get_tags():
-#     response = [serialize(tag) for tag in db.tags.find()]
-#     return jsonify(response), 200
 
 @app.route('/get_tags', methods=['GET'])
 def get_tags():
-    response = [serialize(tag) for tag in db.tags.find()]
+    response = [serialize(tag) for tag in mongo.db.tags.find()]
     return jsonify(response), 200
-
 
 ############################################################################################################
 @app.route('/add_organization', methods=['POST'])
 def add_organization():
     data = request.get_json()
     if data:
-        result = db.organizations.insert_one(data)
+        result = mongo.db.organizations.insert_one(data)
         return jsonify({"message": "Organization added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
@@ -84,7 +79,7 @@ def add_organization():
 def add_client():
     data = request.get_json()
     if data:
-        result = db.clients.insert_one(data)
+        result = mongo.db.clients.insert_one(data)
         return jsonify({"message": "Client added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
@@ -93,7 +88,7 @@ def add_client():
 def add_post():
     data = request.get_json()
     if data:
-        result = db.posts.insert_one(data)
+        result = mongo.db.posts.insert_one(data)
         return jsonify({"message": "Post added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
@@ -102,7 +97,7 @@ def add_post():
 def add_notification():
     data = request.get_json()
     if data:
-        result = db.notifications.insert_one(data)
+        result = mongo.db.notifications.insert_one(data)
         return jsonify({"message": "Notification added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
@@ -111,15 +106,15 @@ def add_notification():
 def add_tag():
     data = request.get_json()
     if data:
-        result = db.tags.insert_one(data)
+        result = mongo.db.tags.insert_one(data)
         return jsonify({"message": "Tag added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
 ############################################################################################################
 
-
 if __name__ == '__main__':
     try:
+        # app.run(debug=True)
         app.run(host='0.0.0.0', debug=True)
     finally:
-        server.stop()  
+        server.stop()  # Remember to close the SSH tunnel when you're done
