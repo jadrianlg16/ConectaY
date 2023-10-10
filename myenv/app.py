@@ -27,6 +27,9 @@ app = Flask(__name__)
 def serialize(doc):
     return json.loads(json_util.dumps(doc))
 
+
+
+
 @app.route('/get_all_collections', methods=['GET'])
 def get_all_collections():
     collections_data = {
@@ -39,6 +42,7 @@ def get_all_collections():
     return jsonify(collections_data), 200
 
 ############################################################################################################
+# GET requests section
 @app.route('/get_organizations', methods=['GET'])
 def get_organizations():
     response = [serialize(org) for org in db.organizations.find()]
@@ -71,6 +75,7 @@ def get_tags():
 
 
 ############################################################################################################
+# POST requests section
 @app.route('/add_organization', methods=['POST'])
 def add_organization():
     data = request.get_json()
@@ -116,8 +121,10 @@ def add_tag():
     else:
         return jsonify({"error": "Invalid data!"}), 400
 ############################################################################################################
+# UPDATE requests section
 
 
+############################################################################################################
 if __name__ == '__main__':
     try:
         app.run(host='0.0.0.0', debug=True)
