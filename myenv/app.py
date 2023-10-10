@@ -122,9 +122,43 @@ def add_tag():
         return jsonify({"error": "Invalid data!"}), 400
 ############################################################################################################
 # UPDATE requests section
+@app.route('/update_organization/<string:org_alias>', methods=['PUT'])
+def update_organization(org_alias):
+    data = request.get_json()
+    if data:
+        result = db.organizations.update_one({"alias": org_alias}, {"$set": data})
+        if result.matched_count:
+            return jsonify({"message": "Organization updated successfully!"}), 200
+        else:
+            return jsonify({"error": "Organization not found!"}), 404
+    else:
+        return jsonify({"error": "Invalid data!"}), 400
 
+@app.route('/update_client/<string:client_email>', methods=['PUT'])
+def update_client(client_email):
+    data = request.get_json()
+    if data:
+        result = db.clients.update_one({"email": client_email}, {"$set": data})
+        if result.matched_count:
+            return jsonify({"message": "Client updated successfully!"}), 200
+        else:
+            return jsonify({"error": "Client not found!"}), 404
+    else:
+        return jsonify({"error": "Invalid data!"}), 400
 
+@app.route('/update_post/<string:post_id>', methods=['PUT'])
+def update_post(post_id):
+    data = request.get_json()
+    if data:
+        result = db.posts.update_one({"_id": pymongo.ObjectId(post_id)}, {"$set": data})
+        if result.matched_count:
+            return jsonify({"message": "Post updated successfully!"}), 200
+        else:
+            return jsonify({"error": "Post not found!"}), 404
+    else:
+        return jsonify({"error": "Invalid data!"}), 400
 ############################################################################################################
+
 if __name__ == '__main__':
     try:
         app.run(host='0.0.0.0', debug=True)
