@@ -134,15 +134,15 @@ def update_organization(org_alias):
     else:
         return jsonify({"error": "Invalid data!"}), 400
 
-@app.route('/update_client/<string:client_email>', methods=['PUT'])
-def update_client(client_email):
+@app.route('/update_person/<string:person_email>', methods=['PUT'])
+def update_person(person_email):
     data = request.get_json()
     if data:
-        result = db.clients.update_one({"email": client_email}, {"$set": data})
+        result = db.personas.update_one({"email": person_email}, {"$set": data})
         if result.matched_count:
-            return jsonify({"message": "Client updated successfully!"}), 200
+            return jsonify({"message": "Person updated successfully!"}), 200
         else:
-            return jsonify({"error": "Client not found!"}), 404
+            return jsonify({"error": "Person not found!"}), 404
     else:
         return jsonify({"error": "Invalid data!"}), 400
 
@@ -158,6 +158,7 @@ def update_post(post_id):
     else:
         return jsonify({"error": "Invalid data!"}), 400
 ############################################################################################################
+
 
 if __name__ == '__main__':
     try:
