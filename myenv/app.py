@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from bson import json_util
+from bson.objectid import ObjectId
 from sshtunnel import SSHTunnelForwarder
 import pymongo
 import json
@@ -158,7 +159,40 @@ def update_post(post_id):
     else:
         return jsonify({"error": "Invalid data!"}), 400
 ############################################################################################################
+#SPECIFIC GETS
 
+
+
+
+@app.route('/get_organization/<string:org_id>', methods=['GET'])
+def get_organization(org_id):
+    org = db.organizations.find_one({"_id": ObjectId(org_id)})
+    if org:
+        return jsonify(serialize(org)), 200
+    else:
+        return jsonify({"error": "Organization not found!"}), 404
+
+
+@app.route('/get_client/<string:client_id>', methods=['GET'])
+def get_client(client_id):
+    client = db.clients.find_one({"_id": pymongo.ObjectId(client_id)})
+    if client:
+        return jsonify(serialize(client)), 200
+    else:
+        return jsonify({"error": "Client not found!"}), 404
+
+@app.route('/get_post/<string:post_id>', methods=['GET'])
+def get_post(post_id):
+    post = db.posts.find_one({"_id": pymongo.ObjectId(post_id)})
+    if post:
+        return jsonify(serialize(post)), 200
+    else:
+        return jsonify({"error": "Post not found!"}), 404
+
+
+
+
+#############################################################################################################
 
 if __name__ == '__main__':
     try:
