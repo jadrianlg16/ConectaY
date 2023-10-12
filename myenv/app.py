@@ -164,30 +164,30 @@ def update_post(post_id):
 
 
 
-@app.route('/get_organization/<string:org_id>', methods=['GET'])
-def get_organization(org_id):
-    org = db.organizations.find_one({"_id": ObjectId(org_id)})
+@app.route('/get_organization/<string:org_alias>', methods=['GET'])
+def get_organization(org_alias):
+    org = db.organizations.find_one({"name": org_alias})
     if org:
         return jsonify(serialize(org)), 200
     else:
         return jsonify({"error": "Organization not found!"}), 404
 
 
-@app.route('/get_client/<string:client_id>', methods=['GET'])
-def get_client(client_id):
-    client = db.clients.find_one({"_id": pymongo.ObjectId(client_id)})
+@app.route('/get_client/<string:client_phone>', methods=['GET'])
+def get_client(client_phone):
+    client = db.clients.find_one({"phone": client_phone})
     if client:
         return jsonify(serialize(client)), 200
     else:
         return jsonify({"error": "Client not found!"}), 404
 
-@app.route('/get_post/<string:post_id>', methods=['GET'])
-def get_post(post_id):
-    post = db.posts.find_one({"_id": pymongo.ObjectId(post_id)})
-    if post:
-        return jsonify(serialize(post)), 200
+@app.route('/get_posts/<string:org_id>', methods=['GET'])
+def get_posts(org_id):
+    posts = list(db.posts.find({"organizationId": org_id}))
+    if posts:
+        return jsonify([serialize(post) for post in posts]), 200
     else:
-        return jsonify({"error": "Post not found!"}), 404
+        return jsonify({"error": "Posts not found!"}), 404
 
 
 
