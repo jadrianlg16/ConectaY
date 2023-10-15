@@ -168,13 +168,18 @@ def add_tag():
 
 
 
-@app.route('/get_organization/<string:org_alias>', methods=['GET'])
-def get_organization(org_alias):
-    org = db.organizations.find_one({"name": org_alias})
-    if org:
-        return jsonify(serialize(org)), 200
-    else:
-        return jsonify({"error": "Organization not found!"}), 404
+@app.route('/get_organization/<string:org_oid>', methods=['GET'])
+def get_organization(org_oid):
+    try:
+        org = db.organizations.find_one({"_id": ObjectId(org_oid)})
+        if org:
+            return jsonify(serialize(org)), 200
+        else:
+            return jsonify({"error": "Organization not found!"}), 404
+    except:
+        return jsonify({"error": "Invalid ObjectId format!"}), 400
+
+
 
 
 @app.route('/get_client/<string:client_phone>', methods=['GET'])
