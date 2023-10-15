@@ -35,9 +35,9 @@ def serialize(doc):
 def get_all_collections():
     collections_data = {
         'organizations': [serialize(org) for org in db.organizations.find()],
-        'clients': [serialize(client) for client in db.clients.find()],
+        'personas': [serialize(persona) for persona in db.personas.find()],
         'posts': [serialize(post) for post in db.posts.find()],
-        'notifications': [serialize(notification) for notification in db.notifications.find()],
+        # 'notifications': [serialize(notification) for notification in db.notifications.find()],
         'tags': [serialize(tag) for tag in db.tags.find()]
     }
     return jsonify(collections_data), 200
@@ -51,13 +51,14 @@ def get_organizations():
 
 @app.route('/get_clients', methods=['GET'])
 def get_clients():
-    response = [serialize(client) for client in db.clients.find()]
+    response = [serialize(persona) for persona in db.personas.find()]
     return jsonify(response), 200
 
 @app.route('/get_posts', methods=['GET'])
 def get_posts():
     response = [serialize(post) for post in db.posts.find()]
     return jsonify(response), 200
+
 
 @app.route('/get_notifications', methods=['GET'])
 def get_notifications():
@@ -90,10 +91,11 @@ def add_organization():
 def add_client():
     data = request.get_json()
     if data:
-        result = db.clients.insert_one(data)
+        result = db.personas.insert_one(data)
         return jsonify({"message": "Client added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
+
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
@@ -123,41 +125,43 @@ def add_tag():
         return jsonify({"error": "Invalid data!"}), 400
 ############################################################################################################
 # UPDATE requests section
-@app.route('/update_organization/<string:org_alias>', methods=['PUT'])
-def update_organization(org_alias):
-    data = request.get_json()
-    if data:
-        result = db.organizations.update_one({"alias": org_alias}, {"$set": data})
-        if result.matched_count:
-            return jsonify({"message": "Organization updated successfully!"}), 200
-        else:
-            return jsonify({"error": "Organization not found!"}), 404
-    else:
-        return jsonify({"error": "Invalid data!"}), 400
 
-@app.route('/update_person/<string:person_email>', methods=['PUT'])
-def update_person(person_email):
-    data = request.get_json()
-    if data:
-        result = db.personas.update_one({"email": person_email}, {"$set": data})
-        if result.matched_count:
-            return jsonify({"message": "Person updated successfully!"}), 200
-        else:
-            return jsonify({"error": "Person not found!"}), 404
-    else:
-        return jsonify({"error": "Invalid data!"}), 400
+# @app.route('/update_organization/<string:org_alias>', methods=['PUT'])
+# def update_organization(org_alias):
+#     data = request.get_json()
+#     if data:
+#         result = db.organizations.update_one({"alias": org_alias}, {"$set": data})
+#         if result.matched_count:
+#             return jsonify({"message": "Organization updated successfully!"}), 200
+#         else:
+#             return jsonify({"error": "Organization not found!"}), 404
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
 
-@app.route('/update_post/<string:post_id>', methods=['PUT'])
-def update_post(post_id):
-    data = request.get_json()
-    if data:
-        result = db.posts.update_one({"_id": pymongo.ObjectId(post_id)}, {"$set": data})
-        if result.matched_count:
-            return jsonify({"message": "Post updated successfully!"}), 200
-        else:
-            return jsonify({"error": "Post not found!"}), 404
-    else:
-        return jsonify({"error": "Invalid data!"}), 400
+# @app.route('/update_person/<string:person_email>', methods=['PUT'])
+# def update_person(person_email):
+#     data = request.get_json()
+#     if data:
+#         result = db.personas.update_one({"email": person_email}, {"$set": data})
+#         if result.matched_count:
+#             return jsonify({"message": "Person updated successfully!"}), 200
+#         else:
+#             return jsonify({"error": "Person not found!"}), 404
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
+
+# @app.route('/update_post/<string:post_id>', methods=['PUT'])
+# def update_post(post_id):
+#     data = request.get_json()
+#     if data:
+#         result = db.posts.update_one({"_id": pymongo.ObjectId(post_id)}, {"$set": data})
+#         if result.matched_count:
+#             return jsonify({"message": "Post updated successfully!"}), 200
+#         else:
+#             return jsonify({"error": "Post not found!"}), 404
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
+
 ############################################################################################################
 #SPECIFIC GETS
 
@@ -175,19 +179,20 @@ def get_organization(org_alias):
 
 @app.route('/get_client/<string:client_phone>', methods=['GET'])
 def get_client(client_phone):
-    client = db.clients.find_one({"phone": client_phone})
+    client = db.personas.find_one({"phone": client_phone})
     if client:
         return jsonify(serialize(client)), 200
     else:
         return jsonify({"error": "Client not found!"}), 404
 
-@app.route('/get_posts/<string:org_id>', methods=['GET'])
-def get_posts(org_id):
+@app.route('/get_org_post/<string:org_id>', methods=['GET'])
+def get_org_posts(org_id):
     posts = list(db.posts.find({"organizationId": org_id}))
     if posts:
         return jsonify([serialize(post) for post in posts]), 200
     else:
         return jsonify({"error": "Posts not found!"}), 404
+
 
 
 
@@ -212,7 +217,7 @@ def update_organization(org_alias):
 def update_client(client_phone):
     data = request.get_json()
     if data:
-        result = db.clients.update_one({"phone": client_phone}, {"$set": data})
+        result = db.personas.update_one({"phone": client_phone}, {"$set": data})
         if result.matched_count:
             return jsonify({"message": "Client updated successfully!"}), 200
         else:
