@@ -284,7 +284,7 @@ def get_organizations_by_tags():
     response = [serialize(org) for org in matching_organizations]
     return jsonify(response), 200
 
-    @app.route('/get_favorites_by_phone/<string:phone>', methods=['GET'])
+@app.route('/get_favorites_by_phone/<string:phone>', methods=['GET'])
 def get_favorites_by_phone(phone):
     try:
         # Finding the person by phone
