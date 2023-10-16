@@ -204,18 +204,40 @@ def get_org_posts(org_id):
 
 #############################################################################################################
 
+## no borres este comentario
+# @app.route('/update_organization/<string:org_alias>', methods=['PUT'])
+# def update_organization(org_alias):
+#     data = request.get_json()
+#     if data:
+#         result = db.organizations.update_one({"name": org_alias}, {"$set": data})
+#         if result.matched_count:
+#             return jsonify({"message": "Organization updated successfully!"}), 200
+#         else:
+#             return jsonify({"error": "Organization not found!"}), 404
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
 
-@app.route('/update_organization/<string:org_alias>', methods=['PUT'])
-def update_organization(org_alias):
+from bson import ObjectId
+
+@app.route('/update_organization/<string:org_id>', methods=['PUT'])
+def update_organization(org_id):
     data = request.get_json()
     if data:
-        result = db.organizations.update_one({"name": org_alias}, {"$set": data})
-        if result.matched_count:
-            return jsonify({"message": "Organization updated successfully!"}), 200
-        else:
-            return jsonify({"error": "Organization not found!"}), 404
+        try:
+            # Converting string ID to ObjectId and updating the organization
+            result = db.organizations.update_one({"_id": ObjectId(org_id)}, {"$set": data})
+            
+            if result.matched_count:
+                return jsonify({"message": "Organization updated successfully!"}), 200
+            else:
+                return jsonify({"error": "Organization not found!"}), 404
+                
+        except Exception as e:
+            # Handling invalid ObjectId error or any other exception
+            return jsonify({"error": str(e)}), 400
     else:
         return jsonify({"error": "Invalid data!"}), 400
+
 
 
 @app.route('/update_client/<string:client_phone>', methods=['PUT'])
@@ -261,6 +283,27 @@ def get_organizations_by_tags():
     # Serialize the results and return them as a JSON response
     response = [serialize(org) for org in matching_organizations]
     return jsonify(response), 200
+
+    @app.route('/get_favorites_by_phone/<string:phone>', methods=['GET'])
+def get_favorites_by_phone(phone):
+    try:
+        # Finding the person by phone
+        person = db.personas.find_one({"phone": phone})
+        
+        if person:
+            # Getting the favorites array from the person's document
+            favorites_ids = person.get('favorites', [])
+            
+            # Finding organizations whose IDs are in the person's favorites array
+            favorite_orgs = [serialize(org) for org in db.organizations.find({"_id": {"$in": [ObjectId(fav_id) for fav_id in favorites_ids]}})]
+            
+            return jsonify(favorite_orgs), 200
+        else:
+            return jsonify({"error": "Person not found!"}), 404
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == '__main__':
