@@ -243,24 +243,6 @@ def update_post(post_id):
         return jsonify({"error": "Invalid data!"}), 400
 
 
-#################################################################################################
-# for geting orgs by tags
-
-@app.route('/get_organizations_by_tags', methods=['GET'])
-def get_organizations_by_tags():
-    # Get tags from query parameters
-    tags = request.args.getlist('tags')
-    
-    # If no tags are provided, return an error response
-    if not tags:
-        return jsonify({"error": "No tags provided!"}), 400
-
-    # Query the database for organizations with any of the provided tags
-    matching_organizations = db.organizations.find({"tags": {"$in": tags}})
-    
-    # Serialize the results and return them as a JSON response
-    response = [serialize(org) for org in matching_organizations]
-    return jsonify(response), 200
 
 
 if __name__ == '__main__':
