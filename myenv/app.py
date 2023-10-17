@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask, jsonify, request, redirect, flash, session
 from pymongo import MongoClient, errors
 from bson import json_util
