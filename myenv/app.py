@@ -7,6 +7,7 @@ import pymongo
 import phonenumbers
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
+from bson import ObjectId
 
 MONGO_HOST = "10.14.255.172"  
 MONGO_DB = "ConectaMX"
@@ -350,7 +351,7 @@ def get_org_posts(org_id):
 #     else:
 #         return jsonify({"error": "Invalid data!"}), 400
 
-from bson import ObjectId
+
 
 @app.route('/update_organization/<string:org_id>', methods=['PUT'])
 def update_organization(org_id):
