@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, request
-from pymongo import MongoClient
+from flask import Flask, jsonify, request, redirect, flash, session
+from pymongo import MongoClient, errors
 from bson import json_util
 from bson.objectid import ObjectId
 from sshtunnel import SSHTunnelForwarder
 import pymongo
+import phonenumbers
 import json
+from werkzeug.security import generate_password_hash, check_password_hash
 
 MONGO_HOST = "10.14.255.172"  
 MONGO_DB = "ConectaMX"
@@ -78,6 +80,8 @@ def get_tags():
 
 ############################################################################################################
 # POST requests section
+
+'''
 @app.route('/add_organization', methods=['POST'])
 def add_organization():
     data = request.get_json()
@@ -86,7 +90,136 @@ def add_organization():
         return jsonify({"message": "Organization added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
+'''
 
+@app.route('/register_client', methods=['POST'])
+def register_client():
+    if request.method == 'POST':
+        client_name = request.json['name']
+        email = request.json['email']
+        phone_number = request.json['phone']
+        password = request.json['password']
+        error = None
+        db.personas.create_index('phone', unique=True)
+
+        if not phone_number or phone_number.isspace():
+            error = 'Es oblligatorio ingresar un número de teléfono.'
+            return error, 400
+        elif not password:
+            error = 'Es obligatorio crear una contraseña.'
+            return error, 400
+
+        try:
+            # Si el prefijo internacional es None, el usuario debe escribirlo (ej. +52)
+            # Si se define una region en None (ej. 'MX') el usuario solo debe escribir los 10 digitos de su num. de tel.
+            phone_number_info = phonenumbers.parse(phone_number, 'MX')  
+            phone_number_formatted = phonenumbers.format_number(phone_number_info, phonenumbers.PhoneNumberFormat.E164)
+            phone_number_test = phonenumbers.is_valid_number(phone_number_info)
+        except phonenumbers.NumberParseException:
+            error = 'El número de teléfono ingresado no es válido.'
+            return error, 400
+        
+        if phone_number_test is False:
+            error = 'El número de teléfono ingresado no es válido.'
+            return error, 400
+        
+        if error is None:
+            try:
+                hashed_password = generate_password_hash(password)
+                users = db.personas
+                id = users.insert_one({
+                    'name': client_name,
+                    'email': email,
+                    'phone': phone_number_formatted,
+                    'password': hashed_password
+                })
+                response = {
+                    'message': 'Se registró exitosamente el usuario.',
+                    'id': str(id.inserted_id),
+                    'name': client_name,
+                    'email': email,
+                    'phone': phone_number_formatted,
+                    'password': hashed_password
+                }
+                return response, 201
+            except errors.DuplicateKeyError:
+                return f"El número de teléfono {phone_number_formatted} ya está registrado.", 400
+            else:
+                return redirect('/login_client')
+        flash(error)
+
+@app.route('/register_organization', methods=['POST'])
+def register_organization():
+    if request.method == 'POST':
+        organization_name = request.json['name']
+        email = request.json['email']
+        phone_number = request.json['phone']
+        password = request.json['password']
+        rfc_code = request.json['RFC']
+
+        error = None
+        db.organizations.create_index('RFC', unique=True)
+
+        if not rfc_code or rfc_code.isspace():
+            error = 'Es oblligatorio ingresar un RFC.'
+            return error, 400
+        elif not password:
+            error = 'Es obligatorio crear una contraseña.'
+            return error, 400
+
+        if error is None:
+            try:
+                hashed_password = generate_password_hash(password)
+                users = db.personas
+                id = users.insert_one({
+                    'name': organization_name,
+                    'email': email,
+                    'phone': phone_number,
+                    'password': hashed_password,
+                    'RFC': rfc_code
+                })
+                response = {
+                    'message': 'Se registró exitosamente el usuario.',
+                    'id': str(id.inserted_id),
+                    'name': organization_name,
+                    'email': email,
+                    'phone': phone_number,
+                    'password': hashed_password,
+                    'RFC': rfc_code
+                }
+                return response, 201
+            except errors.DuplicateKeyError:
+                return f"El número de RFC {rfc_code} ya está registrado.", 400
+            else:
+                return redirect('/login_organization')
+        flash(error)
+
+@app.route('/login_client', methods=['POST'])
+def login_client():
+    if request.method == 'POST':
+        phone_number = request.json['phone']
+        password = request.json['password']
+        error = None
+        phone_number = db.personas.find_one({'phone': phone_number})
+
+        if phone_number is None:
+            error = 'Número de teléfono incorrecto.'
+            return error, 400
+        elif not check_password_hash(phone_number['password'], password):
+            error = 'Contraseña incorrecta.'
+            return error, 400
+
+        if error is None:
+            session.clear()
+            session['phone_id'] = str(phone_number['_id'])
+            return jsonify({'message': 'Has iniciado sesión correctamente.'})
+
+        flash(error)
+
+    return redirect('/login_client')
+
+
+'''
 @app.route('/add_client', methods=['POST'])
 def add_client():
     data = request.get_json()
@@ -95,7 +228,7 @@ def add_client():
         return jsonify({"message": "Client added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
-
+'''
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
@@ -266,7 +399,7 @@ def update_post(post_id):
 
 
 #################################################################################################
-# for geting orgs by tags
+# for getting orgs by tags
 
 @app.route('/get_organizations_by_tags', methods=['GET'])
 def get_organizations_by_tags():
