@@ -27,6 +27,7 @@ client = MongoClient('127.0.0.1', server.local_bind_port)
 db = client[MONGO_DB]
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret123'
 
 def serialize(doc):
     return json.loads(json_util.dumps(doc))
