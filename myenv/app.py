@@ -107,10 +107,10 @@ def register_client():
         db.personas.create_index('phone', unique=True)
 
         if not phone_number or phone_number.isspace():
-            error = 'Es oblligatorio ingresar un número de teléfono.'
+            error = 'Es oblligatorio ingresar un numero de telefono.'
             return error, 400
         elif not password:
-            error = 'Es obligatorio crear una contraseña.'
+            error = 'Es obligatorio crear una contrasena.'
             return error, 400
 
         try:
@@ -120,11 +120,11 @@ def register_client():
             phone_number_formatted = phonenumbers.format_number(phone_number_info, phonenumbers.PhoneNumberFormat.E164)
             phone_number_test = phonenumbers.is_valid_number(phone_number_info)
         except phonenumbers.NumberParseException:
-            error = 'El número de teléfono ingresado no es válido.'
+            error = 'El numero de telefono ingresado no es valido.'
             return error, 400
         
         if phone_number_test is False:
-            error = 'El número de teléfono ingresado no es válido.'
+            error = 'El numero de telefono ingresado no es valido.'
             return error, 400
         
         if error is None:
@@ -138,7 +138,7 @@ def register_client():
                     'password': hashed_password
                 })
                 response = {
-                    'message': 'Se registró exitosamente el usuario.',
+                    'message': 'Se registro exitosamente el usuario.',
                     'id': str(id.inserted_id),
                     'name': client_name,
                     'email': email,
@@ -147,7 +147,7 @@ def register_client():
                 }
                 return response, 201
             except errors.DuplicateKeyError:
-                return f"El número de teléfono {phone_number_formatted} ya está registrado.", 400
+                return f"El numero de telefono {phone_number_formatted} ya esta registrado.", 400
             else:
                 return redirect('/login_client')
         flash(error)
@@ -168,7 +168,7 @@ def register_organization():
             error = 'Es oblligatorio ingresar un RFC.'
             return error, 400
         elif not password:
-            error = 'Es obligatorio crear una contraseña.'
+            error = 'Es obligatorio crear una contrasena.'
             return error, 400
 
         if error is None:
@@ -183,7 +183,7 @@ def register_organization():
                     'RFC': rfc_code
                 })
                 response = {
-                    'message': 'Se registró exitosamente el usuario.',
+                    'message': 'Se registro exitosamente el usuario.',
                     'id': str(id.inserted_id),
                     'name': organization_name,
                     'email': email,
@@ -193,7 +193,7 @@ def register_organization():
                 }
                 return response, 201
             except errors.DuplicateKeyError:
-                return f"El número de RFC {rfc_code} ya está registrado.", 400
+                return f"El numero de RFC {rfc_code} ya esta registrado.", 400
             else:
                 return redirect('/login_organization')
         flash(error)
@@ -207,16 +207,16 @@ def login_client():
         phone_number = db.personas.find_one({'phone': phone_number})
 
         if phone_number is None:
-            error = 'Número de teléfono incorrecto.'
+            error = 'Numero de telefono incorrecto.'
             return error, 400
         elif not check_password_hash(phone_number['password'], password):
-            error = 'Contraseña incorrecta.'
+            error = 'Contrasena incorrecta.'
             return error, 400
 
         if error is None:
             session.clear()
             session['phone_id'] = str(phone_number['_id'])
-            return jsonify({'message': 'Has iniciado sesión correctamente.'})
+            return jsonify({'message': 'Has iniciado sesion correctamente.'})
 
         flash(error)
 
