@@ -299,6 +299,32 @@ def login_client():
 
     return redirect('/login_client')
 
+@app.route('/login_organization', methods=['POST'])
+def login_organization():
+    if request.method == 'POST':
+        rfc_code = request.json['RFC']
+        password = request.json['password']
+        error = None
+        organization_rfc = db.organizations.find_one({'RFC': rfc_code})
+
+        if organization_rfc is None:
+            error = 'Numero de RFC incorrecto.'
+            return error, 400
+        elif not check_password_hash(organization_rfc['password'], password):
+            error = 'Contrasena incorrecta.'
+            return error, 400
+
+        if error is None:
+            session.clear()
+            session['RFC'] = str(organization_rfc['_id'])
+            organization_info_json= json_util.dumps(organization_rfc)
+            organization_info_dict = json_util.loads(organization_info_json)
+            organization_info_dict.pop('_id', None)
+            return jsonify({'organization_info': organization_info_dict})
+
+        flash(error)
+
+    return redirect('/login_organization')
 
 '''
 @app.route('/add_client', methods=['POST'])
