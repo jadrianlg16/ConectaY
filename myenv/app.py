@@ -55,7 +55,7 @@ def get_organizations():
     response = [serialize(org) for org in db.organizations.find()]
     return jsonify(response), 200
 
-@app.route('/get_organization', methods=['POST'])
+@app.route('/get_organization', methods=['GET'])
 def get_organization():
     data = request.get_json()
     rfc = data.get('rfc')
