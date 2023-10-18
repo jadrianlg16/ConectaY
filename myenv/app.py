@@ -459,13 +459,31 @@ def get_org_posts(org_id):
 
 
 
-@app.route('/update_organization/<string:org_id>', methods=['PUT'])
-def update_organization(org_id):
+# @app.route('/update_organization/<string:org_id>', methods=['PUT'])
+# def update_organization(org_id):
+#     data = request.get_json()
+#     if data:
+#         try:
+#             # Converting string ID to ObjectId and updating the organization
+#             result = db.organizations.update_one({"_id": ObjectId(org_id)}, {"$set": data})
+            
+#             if result.matched_count:
+#                 return jsonify({"message": "Organization updated successfully!"}), 200
+#             else:
+#                 return jsonify({"error": "Organization not found!"}), 404
+                
+#         except Exception as e:
+#             # Handling invalid ObjectId error or any other exception
+#             return jsonify({"error": str(e)}), 400
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
+@app.route('/update_organization/<string:rfc>', methods=['PUT'])
+def update_organization(rfc):
     data = request.get_json()
     if data:
         try:
-            # Converting string ID to ObjectId and updating the organization
-            result = db.organizations.update_one({"_id": ObjectId(org_id)}, {"$set": data})
+            # Updating the organization using RFC
+            result = db.organizations.update_one({"RFC": rfc}, {"$set": data})
             
             if result.matched_count:
                 return jsonify({"message": "Organization updated successfully!"}), 200
@@ -473,7 +491,7 @@ def update_organization(org_id):
                 return jsonify({"error": "Organization not found!"}), 404
                 
         except Exception as e:
-            # Handling invalid ObjectId error or any other exception
+            # Handling any exception that may occur
             return jsonify({"error": str(e)}), 400
     else:
         return jsonify({"error": "Invalid data!"}), 400
