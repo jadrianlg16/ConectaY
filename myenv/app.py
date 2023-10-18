@@ -114,10 +114,10 @@ def add_organization():
 @app.route('/register_client', methods=['GET', 'POST'])
 def register_client():
     if request.method == 'POST':
-        client_name = request.json.get['name', ""]
-        email = request.json.get['email', ""]
-        phone_number = request.json.get['phone', ""]
-        password = request.json.get['password', ""]
+        client_name = request.json.get('name', "")
+        email = request.json.get('email', "")
+        phone_number = request.json.get('phone', "")
+        password = request.json.get('password', "")
         error = None
         db.personas.create_index('phone', unique=True)
 
