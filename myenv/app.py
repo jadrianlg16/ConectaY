@@ -283,14 +283,51 @@ def add_tag():
         return jsonify({"message": "Tag added successfully!", "_id": str(result.inserted_id)}), 201
     else:
         return jsonify({"error": "Invalid data!"}), 400
+############################################################################################################
+# UPDATE requests section
 
+# @app.route('/update_organization/<string:org_alias>', methods=['PUT'])
+# def update_organization(org_alias):
+#     data = request.get_json()
+#     if data:
+#         result = db.organizations.update_one({"alias": org_alias}, {"$set": data})
+#         if result.matched_count:
+#             return jsonify({"message": "Organization updated successfully!"}), 200
+#         else:
+#             return jsonify({"error": "Organization not found!"}), 404
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
+
+# @app.route('/update_person/<string:person_email>', methods=['PUT'])
+# def update_person(person_email):
+#     data = request.get_json()
+#     if data:
+#         result = db.personas.update_one({"email": person_email}, {"$set": data})
+#         if result.matched_count:
+#             return jsonify({"message": "Person updated successfully!"}), 200
+#         else:
+#             return jsonify({"error": "Person not found!"}), 404
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
+
+# @app.route('/update_post/<string:post_id>', methods=['PUT'])
+# def update_post(post_id):
+#     data = request.get_json()
+#     if data:
+#         result = db.posts.update_one({"_id": pymongo.ObjectId(post_id)}, {"$set": data})
+#         if result.matched_count:
+#             return jsonify({"message": "Post updated successfully!"}), 200
+#         else:
+#             return jsonify({"error": "Post not found!"}), 404
+#     else:
+#         return jsonify({"error": "Invalid data!"}), 400
 
 ############################################################################################################
 #SPECIFIC GETS
 
 
 
-
+'''
 @app.route('/get_organization/<string:org_oid>', methods=['GET'])
 def get_organization(org_oid):
     try:
@@ -301,7 +338,7 @@ def get_organization(org_oid):
             return jsonify({"error": "Organization not found!"}), 404
     except:
         return jsonify({"error": "Invalid ObjectId format!"}), 400
-
+'''
 
 
 
