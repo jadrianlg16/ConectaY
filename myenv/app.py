@@ -158,8 +158,25 @@ def register_client():
 def register_organization():
     if request.method == 'POST':
         organization_name = request.json['name']
+        organization_alias = request.json['alias']
+        address = request.json['address']
+        city = request.json['city']
+        state = request.json['state']
+        country = request.json['country']
+        zip_code = request.json['zip']
         email = request.json['email']
-        phone_number = request.json['phone']
+        first_phone_number = request.json['first_phone']
+        second_phone_number = request.json['second_phone']
+        service_hours = request.json['serviceHours']
+        website = request.json['website']
+        facebook = request.json['facebook']
+        twitter = request.json['twitter']
+        instagram = request.json['instagram']
+        linkedin = request.json['linkedin']
+        youtube = request.json['youtube']
+        tiktok = request.json['tiktok']
+        whatsapp = request.json['whatsapp']
+        mission_statement = request.json['missionStatement']
         password = request.json['password']
         rfc_code = request.json['RFC']
 
@@ -179,17 +196,39 @@ def register_organization():
                 organizations = db.organizations
                 id = organizations.insert_one({
                     'name': organization_name,
+                    'alias': organization_alias,
+                    'address': address,
+                    'city': city,
+                    'state': state,
+                    'country': country,
+                    'zip': zip_code,
                     'email': email,
-                    'phone': phone_number,
+                    'first_phone': first_phone_number,
+                    'second_phone': second_phone_number,
+                    'serviceHours': service_hours,
+                    'website': website,
+                    'facebook': facebook,
+                    'twitter': twitter,
+                    'instagram': instagram,
+                    'linkedin': linkedin,
+                    'youtube': youtube,
+                    'tiktok': tiktok,
+                    'whatsapp': whatsapp,
+                    'missionStatement': mission_statement,
+                    'logo': '',
+                    'tags': [],
+                    'postIds': [],
+                    'followers': [],
                     'password': hashed_password,
                     'RFC': rfc_code
                 })
                 response = {
-                    'message': 'Se registro exitosamente la organizacion.',
+                    'message': 'Se registró exitosamente el usuario.',
                     'id': str(id.inserted_id),
                     'name': organization_name,
                     'email': email,
-                    'phone': phone_number,
+                    'first_phone': first_phone_number,
+                    'second_phone': second_phone_number,
                     'password': hashed_password,
                     'RFC': rfc_code
                 }
