@@ -176,7 +176,7 @@ def register_organization():
         if error is None:
             try:
                 hashed_password = generate_password_hash(password)
-                users = db.personas
+                users = db.organizations
                 id = users.insert_one({
                     'name': organization_name,
                     'email': email,
@@ -185,7 +185,7 @@ def register_organization():
                     'RFC': rfc_code
                 })
                 response = {
-                    'message': 'Se registro exitosamente el usuario.',
+                    'message': 'Se registro exitosamente la organizacion.',
                     'id': str(id.inserted_id),
                     'name': organization_name,
                     'email': email,
