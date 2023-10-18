@@ -223,7 +223,7 @@ def register_organization():
                     'RFC': rfc_code
                 })
                 response = {
-                    'message': 'Se registró exitosamente el usuario.',
+                    'message': 'Se registro exitosamente el usuario.',
                     'id': str(id.inserted_id),
                     'name': organization_name,
                     'email': email,
