@@ -137,7 +137,7 @@ def register_client():
                     'phone': phone_number_formatted,
                     'password': hashed_password,
                     'favorites': [],
-                    'intrestedTags': []
+                    'interestedTags': []
                 })
                 response = {
                     'message': 'Se registro exitosamente el usuario.',
