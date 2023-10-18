@@ -268,16 +268,37 @@ def add_tag():
 
 
 
-@app.route('/get_organization/<string:org_oid>', methods=['GET'])
-def get_organization(org_oid):
+# @app.route('/get_organization/<string:org_oid>', methods=['GET'])
+# def get_organization(org_oid):
+#     try:
+#         org = db.organizations.find_one({"_id": ObjectId(org_oid)})
+#         if org:
+#             return jsonify(serialize(org)), 200
+#         else:
+#             return jsonify({"error": "Organization not found!"}), 404
+#     except:
+#         return jsonify({"error": "Invalid ObjectId format!"}), 400
+
+from flask import jsonify, request
+
+@app.route('/get_organization', methods=['GET'])
+def get_organization():
     try:
-        org = db.organizations.find_one({"_id": ObjectId(org_oid)})
+        rfc = request.args.get('rfc')
+        password = request.args.get('password')
+        
+        if not rfc or not password:
+            return jsonify({"error": "RFC and password are required!"}), 400
+        
+        org = db.organizations.find_one({"RFC": rfc, "password": password})
+        
         if org:
             return jsonify(serialize(org)), 200
         else:
-            return jsonify({"error": "Organization not found!"}), 404
-    except:
-        return jsonify({"error": "Invalid ObjectId format!"}), 400
+            return jsonify({"error": "Organization not found or incorrect credentials!"}), 404
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 
