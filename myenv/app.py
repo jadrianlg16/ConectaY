@@ -96,7 +96,7 @@ def add_organization():
         return jsonify({"error": "Invalid data!"}), 400
 '''
 
-@app.route('/register_client', methods=['POST'])
+@app.route('/register_client', methods=['GET', 'POST'])
 def register_client():
     if request.method == 'POST':
         client_name = request.json['name']
@@ -152,7 +152,7 @@ def register_client():
                 return redirect('/login_client')
         flash(error)
 
-@app.route('/register_organization', methods=['POST'])
+@app.route('/register_organization', methods=['GET', 'POST'])
 def register_organization():
     if request.method == 'POST':
         organization_name = request.json['name']
@@ -198,7 +198,7 @@ def register_organization():
                 return redirect('/login_organization')
         flash(error)
 
-@app.route('/login_client', methods=['POST'])
+@app.route('/login_client', methods=['GET', 'POST'])
 def login_client():
     if request.method == 'POST':
         phone_number = request.json['phone']
