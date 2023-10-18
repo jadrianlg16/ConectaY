@@ -50,20 +50,23 @@ def get_all_collections():
 
 ############################################################################################################
 # GET requests section
-# @app.route('/get_organizations', methods=['GET'])
-# def get_organizations():
-#     response = [serialize(org) for org in db.organizations.find()]
-#     return jsonify(response), 200
-
 @app.route('/get_organizations', methods=['GET'])
 def get_organizations():
-    rfc = request.args.get('rfc')
-    password = request.args.get('password')
+    response = [serialize(org) for org in db.organizations.find()]
+    return jsonify(response), 200
+
+@app.route('/get_organization', methods=['POST'])
+def get_organization():
+    data = request.get_json()
+    rfc = data.get('rfc')
+    password = data.get('password')
     
     if rfc and password:
-        orgs = db.organizations.find({'RFC': rfc, 'password': password})
-        response = [serialize(org) for org in orgs]
-        return jsonify(response), 200 
+        org = db.organizations.find_one({'RFC': rfc, 'password': password})
+        if org:
+            return jsonify(serialize(org)), 200
+        else:
+            return jsonify({'error': 'Organization not found'}), 404
     else:
         return jsonify({'error': 'Missing parameters'}), 400
 
