@@ -135,7 +135,9 @@ def register_client():
                     'name': client_name,
                     'email': email,
                     'phone': phone_number_formatted,
-                    'password': hashed_password
+                    'password': hashed_password,
+                    'favorites': [],
+                    'intrestedTags': []
                 })
                 response = {
                     'message': 'Se registro exitosamente el usuario.',
@@ -204,19 +206,40 @@ def login_client():
         phone_number = request.json['phone']
         password = request.json['password']
         error = None
-        phone_number = db.personas.find_one({'phone': phone_number})
 
-        if phone_number is None:
+        try:
+            # Parse and format phone number
+            phone_number_info = phonenumbers.parse(phone_number, 'MX')
+            phone_number_formatted = phonenumbers.format_number(phone_number_info, phonenumbers.PhoneNumberFormat.E164)
+            phone_number_test = phonenumbers.is_valid_number(phone_number_info)
+        except phonenumbers.NumberParseException:
+            error = 'El numero de telefono ingresado no es valido.'
+            return error, 400
+        
+        if  not phone_number_test:
+            error = 'El numero de telefono ingresado no es valido.'
+            return error, 400
+
+        client_phone = db.personas.find_one({'phone': phone_number_formatted})
+
+        if client_phone is None:
             error = 'Numero de telefono incorrecto.'
             return error, 400
-        elif not check_password_hash(phone_number['password'], password):
+        elif not check_password_hash(client_phone['password'], password):
             error = 'Contrasena incorrecta.'
             return error, 400
 
         if error is None:
             session.clear()
-            session['phone_id'] = str(phone_number['_id'])
-            return jsonify({'message': 'Has iniciado sesion correctamente.'})
+            session['phone_id'] = str(client_phone['_id'])
+            # Serialize MongoDB document to JSON string
+            client_info_json= json_util.dumps(client_phone)
+            # Parse JSON stirng to dictionary
+            client_info_dict = json_util.loads(client_info_json)
+            # Remove MongoDB _id field (which is not JSON-serializable)
+            client_info_dict.pop('_id', None)
+            # Include user info
+            return jsonify({'client_info': client_info_dict})
 
         flash(error)
 
@@ -304,7 +327,7 @@ def add_tag():
 
 
 
-
+'''
 @app.route('/get_organization/<string:org_oid>', methods=['GET'])
 def get_organization(org_oid):
     try:
@@ -315,7 +338,7 @@ def get_organization(org_oid):
             return jsonify({"error": "Organization not found!"}), 404
     except:
         return jsonify({"error": "Invalid ObjectId format!"}), 400
-
+'''
 
 
 
