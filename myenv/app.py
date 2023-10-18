@@ -176,8 +176,8 @@ def register_organization():
         if error is None:
             try:
                 hashed_password = generate_password_hash(password)
-                users = db.organizations
-                id = users.insert_one({
+                organizations = db.organizations
+                id = organizations.insert_one({
                     'name': organization_name,
                     'email': email,
                     'phone': phone_number,
