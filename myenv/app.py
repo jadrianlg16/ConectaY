@@ -55,27 +55,11 @@ def get_organizations():
     response = [serialize(org) for org in db.organizations.find()]
     return jsonify(response), 200
 
-# @app.route('/get_organization', methods=['GET'])
-# def get_organization():
-#     data = request.get_json()
-#     rfc = data.get('rfc')
-#     password = data.get('password')
-    
-#     if rfc and password:
-#         org = db.organizations.find_one({'RFC': rfc, 'password': password})
-#         if org:
-#             return jsonify(serialize(org)), 200
-#         else:
-#             return jsonify({'error': 'Organization not found'}), 404
-#     else:
-#         return jsonify({'error': 'Missing parameters'}), 400
-
-from flask import request, jsonify
-
-@app.route('/get_organization', methods=['GET'])
+@app.route('/get_organization', methods=['POST'])
 def get_organization():
-    rfc = request.args.get('rfc')
-    password = request.args.get('password')
+    data = request.get_json()
+    rfc = data.get('rfc')
+    password = data.get('password')
     
     if rfc and password:
         org = db.organizations.find_one({'RFC': rfc, 'password': password})
@@ -85,7 +69,6 @@ def get_organization():
             return jsonify({'error': 'Organization not found'}), 404
     else:
         return jsonify({'error': 'Missing parameters'}), 400
-
 
 @app.route('/get_clients', methods=['GET'])
 def get_clients():
