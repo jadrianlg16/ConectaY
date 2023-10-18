@@ -293,7 +293,7 @@ def login_client():
             # Remove MongoDB _id field (which is not JSON-serializable)
             client_info_dict.pop('_id', None)
             # Include user info
-            return jsonify({'client_info': client_info_dict})
+            return jsonify({'client_info': client_info_dict}), 200
 
         flash(error)
 
@@ -320,7 +320,7 @@ def login_organization():
             organization_info_json= json_util.dumps(organization_rfc)
             organization_info_dict = json_util.loads(organization_info_json)
             organization_info_dict.pop('_id', None)
-            return jsonify({'organization_info': organization_info_dict})
+            return jsonify({'organization_info': organization_info_dict}), 200
 
         flash(error)
 
