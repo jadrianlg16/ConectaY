@@ -169,101 +169,100 @@ def register_client():
                 return redirect('/login_client')
         flash(error)
 
-@app.route('/register_organization', methods=['GET', 'POST'])
-def register_organization():
-    if request.method == 'POST':
-        organization_name = request.json.get('name', "")
-        organization_alias = request.json.get('alias', "")
-        address = request.json.get('address', "")
-        city = request.json.get('city', "")
-        state = request.json.get('state', "")
-        country = request.json.get('country', "")
-        zip_code = request.json.get('zip', "")
-        neighborhood = request.json.get('neighborhood', "")
-        email = request.json.get('email', "")
-        first_phone_number = request.json.get('first_phone', "")
-        second_phone_number = request.json.get('second_phone', "")
-        service_hours = request.json.get('serviceHours', "")
-        website = request.json.get('website', "")
-        facebook = request.json.get('facebook', "")
-        twitter = request.json.get('twitter', "")
-        instagram = request.json.get('instagram', "")
-        linkedin = request.json.get('linkedin', "")
-        youtube = request.json.get('youtube', "")
-        tiktok = request.json.get('tiktok', "")
-        whatsapp = request.json.get('whatsapp', "")
-        mission_statement = request.json.get('missionStatement', "")
-        password = request.json.get('password', "")
-        rfc_code = request.json.get('RFC', "")
+# @app.route('/register_organization', methods=['GET', 'POST'])
+# def register_organization():
+#     if request.method == 'POST':
+#         organization_name = request.json.get('name', "")
+#         organization_alias = request.json.get('alias', "")
+#         address = request.json.get('address', "")
+#         city = request.json.get('city', "")
+#         state = request.json.get('state', "")
+#         country = request.json.get('country', "")
+#         zip_code = request.json.get('zip', "")
+#         neighborhood = request.json.get('neighborhood', "")
+#         email = request.json.get('email', "")
+#         first_phone_number = request.json.get('first_phone', "")
+#         second_phone_number = request.json.get('second_phone', "")
+#         service_hours = request.json.get('serviceHours', "")
+#         website = request.json.get('website', "")
+#         facebook = request.json.get('facebook', "")
+#         twitter = request.json.get('twitter', "")
+#         instagram = request.json.get('instagram', "")
+#         linkedin = request.json.get('linkedin', "")
+#         youtube = request.json.get('youtube', "")
+#         tiktok = request.json.get('tiktok', "")
+#         whatsapp = request.json.get('whatsapp', "")
+#         mission_statement = request.json.get('missionStatement', "")
+#         password = request.json.get('password', "")
+#         rfc_code = request.json.get('RFC', "")
 
-        error = None
-        db.organizations.create_index('RFC', unique=True)
+#         error = None
+#         db.organizations.create_index('RFC', unique=True)
 
-        if not rfc_code or rfc_code.isspace():
-            error = 'Es oblligatorio ingresar un RFC.'
-            return error, 400
-        elif not password:
-            error = 'Es obligatorio crear una contrasena.'
-            return error, 400
+#         if not rfc_code or rfc_code.isspace():
+#             error = 'Es oblligatorio ingresar un RFC.'
+#             return error, 400
+#         elif not password:
+#             error = 'Es obligatorio crear una contrasena.'
+#             return error, 400
 
-        if error is None:
-            try:
-                hashed_password = generate_password_hash(password)
-                organizations = db.organizations
-                id = organizations.insert_one({
-                    'name': organization_name,
-                    'alias': organization_alias,
-                    'location': {
-                        'address': address,
-                        'city': city,
-                        'state': state,
-                        'country': country,
-                        'zip': zip_code,
-                        'neighborhood': neighborhood,
-                    },
-                    'contact': {
-                        'email': email,
-                        'first_phone': first_phone_number,
-                        'second_phone': second_phone_number,
-                    },
-                    'serviceHours': service_hours,
-                    'website': website,
-                    'socialMedia': {
-                        'facebook': facebook,
-                        'twitter': twitter,
-                        'instagram': instagram,
-                        'linkedIn': linkedin,
-                        'youtube': youtube,
-                        'tiktok': tiktok,
-                        'whatsapp': whatsapp,
-                    },
-                    'missionStatement': mission_statement,
-                    'logo': '',  # Assuming logo will be added later
-                    'tags': [],  # Assuming tags will be added later
-                    'postId': [],  # Assuming postId will be added later
-                    'followers': [],  # Assuming followers will be added later
-                    'password': hashed_password,
-                    'RFC': rfc_code
-                })
-                response = {
-                    'message': 'Se registro exitosamente el usuario.',
-                    'id': str(id.inserted_id),
-                    'name': organization_name,
-                    'email': email,
-                    'first_phone': first_phone_number,
-                    'second_phone': second_phone_number,
-                    'password': hashed_password,
-                    'RFC': rfc_code
-                }
-                return response, 201
-            except errors.DuplicateKeyError:
-                return f"El numero de RFC {rfc_code} ya esta registrado.", 400
-            else:
-                return redirect('/login_organization')
-        flash(error)
+#         if error is None:
+#             try:
+#                 hashed_password = generate_password_hash(password)
+#                 organizations = db.organizations
+#                 id = organizations.insert_one({
+#                     'name': organization_name,
+#                     'alias': organization_alias,
+#                     'location': {
+#                         'address': address,
+#                         'city': city,
+#                         'state': state,
+#                         'country': country,
+#                         'zip': zip_code,
+#                         'neighborhood': neighborhood,
+#                     },
+#                     'contact': {
+#                         'email': email,
+#                         'first_phone': first_phone_number,
+#                         'second_phone': second_phone_number,
+#                     },
+#                     'serviceHours': service_hours,
+#                     'website': website,
+#                     'socialMedia': {
+#                         'facebook': facebook,
+#                         'twitter': twitter,
+#                         'instagram': instagram,
+#                         'linkedIn': linkedin,
+#                         'youtube': youtube,
+#                         'tiktok': tiktok,
+#                         'whatsapp': whatsapp,
+#                     },
+#                     'missionStatement': mission_statement,
+#                     'logo': '',  # Assuming logo will be added later
+#                     'tags': [],  # Assuming tags will be added later
+#                     'postId': [],  # Assuming postId will be added later
+#                     'followers': [],  # Assuming followers will be added later
+#                     'password': hashed_password,
+#                     'RFC': rfc_code
+#                 })
+#                 response = {
+#                     'message': 'Se registro exitosamente el usuario.',
+#                     'id': str(id.inserted_id),
+#                     'name': organization_name,
+#                     'email': email,
+#                     'first_phone': first_phone_number,
+#                     'second_phone': second_phone_number,
+#                     'password': hashed_password,
+#                     'RFC': rfc_code
+#                 }
+#                 return response, 201
+#             except errors.DuplicateKeyError:
+#                 return f"El numero de RFC {rfc_code} ya esta registrado.", 400
+#             else:
+#                 return redirect('/login_organization')
+#         flash(error)
 
-from flask import request, jsonify
-from werkzeug.security import generate_password_hash
+
 
 @app.route('/register_organization', methods=['GET', 'POST'])
 def register_organization():
@@ -625,6 +624,26 @@ def get_organizations_by_tags():
 ################
 # FAVORITES SECTION
 
+# @app.route('/get_favorites_by_phone/<string:phone>', methods=['GET'])
+# def get_favorites_by_phone(phone):
+#     try:
+#         # Finding the person by phone
+#         person = db.personas.find_one({"phone": phone})
+        
+#         if person:
+#             # Getting the favorites array from the person's document
+#             favorites_ids = person.get('favorites', [])
+            
+#             # Finding organizations whose IDs are in the person's favorites array
+#             favorite_orgs = [serialize(org) for org in db.organizations.find({"_id": {"$in": [ObjectId(fav_id) for fav_id in favorites_ids]}})]
+            
+#             return jsonify(favorite_orgs), 200
+#         else:
+#             return jsonify({"error": "Person not found!"}), 404
+            
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+
 @app.route('/get_favorites_by_phone/<string:phone>', methods=['GET'])
 def get_favorites_by_phone(phone):
     try:
@@ -634,6 +653,9 @@ def get_favorites_by_phone(phone):
         if person:
             # Getting the favorites array from the person's document
             favorites_ids = person.get('favorites', [])
+            
+            # Removing duplicates by converting the list into a set and then back to a list
+            favorites_ids = list(set(favorites_ids))
             
             # Finding organizations whose IDs are in the person's favorites array
             favorite_orgs = [serialize(org) for org in db.organizations.find({"_id": {"$in": [ObjectId(fav_id) for fav_id in favorites_ids]}})]
@@ -648,7 +670,30 @@ def get_favorites_by_phone(phone):
 
 
 
+# @app.route('/add_favorite_by_phone/<string:phone>', methods=['POST'])
+# def add_favorite_by_phone(phone):
+#     try:
+#         # Get the organization ID from the request data
+#         org_id = request.json.get('org_id')
+        
+#         # Ensure an organization ID is provided
+#         if not org_id:
+#             return jsonify({"error": "Organization ID not provided!"}), 400
 
+#         # Find the person by phone
+#         person = db.personas.find_one({"phone": phone})
+
+#         # Ensure the person is found
+#         if not person:
+#             return jsonify({"error": "Person not found!"}), 404
+
+#         # Add the organization ID to the person's favorites
+#         db.personas.update_one({"phone": phone}, {"$addToSet": {"favorites": org_id}})
+        
+#         return jsonify({"message": "Favorite added successfully!"}), 200
+        
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 @app.route('/add_favorite_by_phone/<string:phone>', methods=['POST'])
 def add_favorite_by_phone(phone):
     try:
@@ -666,10 +711,13 @@ def add_favorite_by_phone(phone):
         if not person:
             return jsonify({"error": "Person not found!"}), 404
 
-        # Add the organization ID to the person's favorites
-        db.personas.update_one({"phone": phone}, {"$addToSet": {"favorites": org_id}})
+        # Add the organization ID to the person's favorites only if it's not already there
+        result = db.personas.update_one({"phone": phone}, {"$addToSet": {"favorites": org_id}})
         
-        return jsonify({"message": "Favorite added successfully!"}), 200
+        if result.modified_count > 0:
+            return jsonify({"message": "Favorite added successfully!"}), 200
+        else:
+            return jsonify({"message": "Organization ID already in favorites!"}), 200
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -705,6 +753,31 @@ def remove_favorite_by_phone(phone):
 
 
 
+@app.route('/check_favorite_by_phone/<string:phone>', methods=['GET'])
+def check_favorite_by_phone(phone):
+    try:
+        # Get the organization ID from the request arguments
+        org_id = request.args.get('org_id')
+        
+        # Ensure an organization ID is provided
+        if not org_id:
+            return jsonify({"error": "Organization ID not provided!"}), 400
+
+        # Find the person by phone
+        person = db.personas.find_one({"phone": phone})
+
+        # Ensure the person is found
+        if not person:
+            return jsonify({"error": "Person not found!"}), 404
+
+        # Check if the organization ID is in the person's favorites
+        if org_id in person.get('favorites', []):
+            return jsonify({"message": "Organization ID is in favorites!"}), 200
+        else:
+            return jsonify({"message": "Organization ID is not in favorites!"}), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
