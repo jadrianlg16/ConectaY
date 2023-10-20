@@ -614,6 +614,9 @@ def get_organizations_by_tags():
     response = [serialize(org) for org in matching_organizations]
     return jsonify(response), 200
 
+################
+# FAVORITES SECTION
+
 @app.route('/get_favorites_by_phone/<string:phone>', methods=['GET'])
 def get_favorites_by_phone(phone):
     try:
@@ -633,6 +636,68 @@ def get_favorites_by_phone(phone):
             
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+
+
+
+@app.route('/add_favorite_by_phone/<string:phone>', methods=['POST'])
+def add_favorite_by_phone(phone):
+    try:
+        # Get the organization ID from the request data
+        org_id = request.json.get('org_id')
+        
+        # Ensure an organization ID is provided
+        if not org_id:
+            return jsonify({"error": "Organization ID not provided!"}), 400
+
+        # Find the person by phone
+        person = db.personas.find_one({"phone": phone})
+
+        # Ensure the person is found
+        if not person:
+            return jsonify({"error": "Person not found!"}), 404
+
+        # Add the organization ID to the person's favorites
+        db.personas.update_one({"phone": phone}, {"$addToSet": {"favorites": org_id}})
+        
+        return jsonify({"message": "Favorite added successfully!"}), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+
+@app.route('/remove_favorite_by_phone/<string:phone>', methods=['POST'])
+def remove_favorite_by_phone(phone):
+    try:
+        # Get the organization ID from the request data
+        org_id = request.json.get('org_id')
+        
+        # Ensure an organization ID is provided
+        if not org_id:
+            return jsonify({"error": "Organization ID not provided!"}), 400
+
+        # Find the person by phone
+        person = db.personas.find_one({"phone": phone})
+
+        # Ensure the person is found
+        if not person:
+            return jsonify({"error": "Person not found!"}), 404
+
+        # Remove the organization ID from the person's favorites
+        db.personas.update_one({"phone": phone}, {"$pull": {"favorites": org_id}})
+        
+        return jsonify({"message": "Favorite removed successfully!"}), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+
 
 
 
